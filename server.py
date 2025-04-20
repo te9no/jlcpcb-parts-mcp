@@ -56,7 +56,7 @@ def get_manufacturer(manufacturer_id: int) -> str | None:
 
 @mcp.tool()
 def search_manufacturer(name: str) -> str | None:
-  """メーカー名から検索を行い、メーカーIDを取得する"""
+  """メーカー名から部分一致で検索を行い、メーカーIDを取得する"""
   result = conn.execute('SELECT id,name FROM manufacturers WHERE name LIKE ?', [f'%{name}%'])
   lines = []
   for r in result:
@@ -92,8 +92,8 @@ def get_datasheet_url(part_id: int) -> str | None:
 class SearchQuery(BaseModel):
   category_id: int = Field(ge=1, description='有効なカテゴリID、list_categoriesツールで取得する')
   manufacturer_id: int | None = Field(ge=1, default=None, description='有効なメーカーID、search_manufacturerやlist_manufacturersツールで取得する')
-  manufacturer_pn: str = Field(default=None, description='メーカー型番')
-  description: str = Field(default=None, description='型番以外の説明文、OR検索は不可、表記ゆれ（-の有無等）は別々に検索の必要あり')
+  manufacturer_pn: str = Field(default=None, description='メーカー型番、SQLiteのLIKE演算子におけるパターンで指定')
+  description: str = Field(default=None, description='型番以外の説明文、SQLiteのLIKE演算子におけるパターンで指定、OR検索や表記ゆれ（-の有無等）は個別検索の必要あり')
   package: str = Field(default=None)
   is_basic_parts: bool | None = Field(default=None)
   is_preferred_parts: bool | None = Field(default=None)
@@ -118,10 +118,10 @@ def search_parts(search_query: SearchQuery) -> str:
     params.append(search_query.manufacturer_id)
   if search_query.manufacturer_pn:
     where_clauses.append('mfr LIKE ?')
-    params.append('%' + search_query.manufacturer_pn + '%')
+    params.append(search_query.manufacturer_pn)
   if search_query.description:
     where_clauses.append('description LIKE ?')
-    params.append('%' + search_query.description + '%')
+    params.append(search_query.description)
   if search_query.package:
     where_clauses.append('package=?')
     params.append(search_query.package)
