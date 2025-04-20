@@ -9,6 +9,9 @@ JLCPCBのPCBA向けの、部品探しを補助するMCPサーバーです。
 Basic Partsに分類されている、フェライトビーズを検索した例です。
 ![会話例](images/sample_conversation.png)
 
+また、以下のページでは降圧型DC-DCコンバータの抵抗値の選定を行っています。
+https://claude.ai/share/9f02f1a4-7b38-48fb-b29a-f10cf1e608ba
+
 ## 設定
 
 データベースとして、[JLC PCB SMD Assembly Component Catalogue](https://github.com/yaqwsx/jlcparts)を使用しています。
